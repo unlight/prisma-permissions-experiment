@@ -1,27 +1,40 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ['query'],
+});
+
+// @ts-ignore
+prisma.$on('query', (event: any) => {
+  if (event.params === '[]') return;
+  console.log('prisma:query:params', event.params);
+});
 
 // A `main` function so that we can use async/await
 async function main() {
   // Create roles
-  const role1 = await prisma.role.create({
+  const guest = await prisma.role.create({
+    data: {
+      name: 'Guest',
+    },
+  });
+  const applicantRole = await prisma.role.create({
     data: {
       name: 'Applicant',
     },
   });
-  const role2 = await prisma.role.create({
+  const watcherRole = await prisma.role.create({
     data: {
       name: 'Watcher',
     },
   });
   // Create categories
-  const category1 = await prisma.category.create({
+  const categoryForApplicants = await prisma.category.create({
     data: {
       name: 'ForApplicants',
     },
   });
-  const category2 = await prisma.category.create({
+  const categoryForUsers = await prisma.category.create({
     data: {
       name: 'ForUsers',
     },
@@ -39,14 +52,14 @@ async function main() {
           published: true,
           category: {
             connect: {
-              categoryId: category1.categoryId,
+              categoryId: categoryForApplicants.categoryId,
             },
           },
         },
       },
       roles: {
         connect: {
-          id: role1.id,
+          roleId: applicantRole.roleId,
         },
       },
     },
@@ -54,6 +67,7 @@ async function main() {
       posts: true,
     },
   });
+
   const user2 = await prisma.user.create({
     data: {
       email: 'bob@prisma.io',
@@ -66,7 +80,7 @@ async function main() {
             published: true,
             category: {
               connect: {
-                categoryId: category2.categoryId,
+                categoryId: categoryForUsers.categoryId,
               },
             },
           },
@@ -76,7 +90,7 @@ async function main() {
             published: false,
             category: {
               connect: {
-                categoryId: category2.categoryId,
+                categoryId: categoryForUsers.categoryId,
               },
             },
           },
@@ -84,7 +98,7 @@ async function main() {
       },
       roles: {
         connect: {
-          id: role2.id,
+          roleId: watcherRole.roleId,
         },
       },
     },
@@ -115,7 +129,7 @@ async function main() {
       },
       category: {
         connect: {
-          categoryId: category2.categoryId,
+          categoryId: categoryForUsers.categoryId,
         },
       },
     },
@@ -142,6 +156,62 @@ async function main() {
     })
     .posts();
   console.log(`Retrieved all posts from a specific user: `, postsByUser);
+
+  // Define permissions
+  await prisma.permission.create({
+    data: {
+      registration: true,
+      viewPosts: false,
+      role: {
+        connect: {
+          roleId: guest.roleId,
+        },
+      },
+    },
+  });
+
+  // Applicant can view only applicant category
+
+  await prisma.permission.create({
+    data: {
+      viewPosts: true,
+      junctionTable: 'Category',
+      junctionColumn: 'categoryId',
+      junctionId: categoryForApplicants.categoryId,
+      role: {
+        connect: {
+          roleId: applicantRole.roleId,
+        },
+      },
+    },
+  });
+
+  await prisma.permission.create({
+    data: {
+      viewPosts: false,
+      junctionTable: 'Category',
+      junctionColumn: 'categoryId',
+      junctionId: categoryForUsers.categoryId,
+      role: {
+        connect: {
+          roleId: applicantRole.roleId,
+        },
+      },
+    },
+  });
+
+  // Watcher can view any category
+
+  await prisma.permission.create({
+    data: {
+      viewPosts: true,
+      role: {
+        connect: {
+          roleId: watcherRole.roleId,
+        },
+      },
+    },
+  });
 }
 
 main()

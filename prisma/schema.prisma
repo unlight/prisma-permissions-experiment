@@ -16,7 +16,7 @@ model User {
 }
 
 model Role {
-  id        Int     @id @default(autoincrement())
+  roleId    Int     @id @default(autoincrement())
   name      String
   users     User[]
 }
@@ -35,4 +35,20 @@ model Post {
 model Category {
   categoryId Int @id @default(autoincrement())
   name String
+}
+
+// Permissions
+
+model Permission {
+  permissionId Int @id @default(autoincrement())
+  roleId Int @default(0)
+  role Role @relation(fields: [roleId], references: [roleId])
+  junctionTable String?
+  junctionColumn String?
+  junctionId Int?
+  /// Allow user register
+  registration Boolean @default(false)
+  /// Configure view posts permission with categoryId junction
+  viewPosts Boolean @default(false)
+  modifyAnyPost Boolean @default(false)
 }
