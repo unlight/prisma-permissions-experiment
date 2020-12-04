@@ -8,9 +8,8 @@ datasource db {
 }
 
 model User {
-  email String  @unique
-  id    Int     @id @default(autoincrement())
-  name  String?
+  userId Int @id @default(autoincrement())
+  name  String @unique
   posts Post[]
   roles Role[]
 }
@@ -22,12 +21,8 @@ model Role {
 }
 
 model Post {
-  authorId  Int?
-  content   String?
   id        Int     @id @default(autoincrement())
-  published Boolean @default(false)
   title     String
-  author    User?   @relation(fields: [authorId], references: [id])
   categoryId Int?
   category Category? @relation(fields: [categoryId], references: [categoryId])
 }
@@ -35,20 +30,15 @@ model Post {
 model Category {
   categoryId Int @id @default(autoincrement())
   name String
+  posts Post[]
+  permission Permission?
 }
-
-// Permissions
 
 model Permission {
   permissionId Int @id @default(autoincrement())
   roleId Int @default(0)
   role Role @relation(fields: [roleId], references: [roleId])
-  junctionTable String?
-  junctionColumn String?
-  junctionId Int?
-  /// Allow user register
-  registration Boolean @default(false)
-  /// Configure view posts permission with categoryId junction
+  categoryId Int?
+  category Category? @relation(fields: [categoryId], references: [categoryId])
   viewPosts Boolean @default(false)
-  modifyAnyPost Boolean @default(false)
 }
