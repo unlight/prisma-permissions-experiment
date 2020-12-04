@@ -10,35 +10,35 @@ async function main() {
 		console.log('prisma:query:params', event.params);
 	});
 
-	const aliceUser = await prisma.user.findUnique({
-		where: { name: 'Alice' },
-	});
-	console.log('aliceUser', aliceUser);
-	console.log('Alice should see `Hello all`, `Post without category`');
+	// const aliceUser = await prisma.user.findUnique({
+	// 	where: { name: 'Alice' },
+	// });
+	// console.log('aliceUser', aliceUser);
+	// console.log('Alice should see `Hello all`, `Post without category`');
 
-	const aliceFeed = await prisma.post.findMany({
-		where: {
-			category: {
-				permission: {
-					OR: [
-						{
-							categoryId: { equals: null },
-						},
-						{
-							role: {
-								users: {
-									some: {
-										userId: aliceUser.userId,
-									},
-								},
-							},
-						},
-					],
-				},
-			},
-		},
-	});
-	console.log('aliceFeed', aliceFeed);
+	// const aliceFeed = await prisma.post.findMany({
+	// 	where: {
+	// 		category: {
+	// 			permission: {
+	// 				OR: [
+	// 					{
+	// 						categoryId: { equals: null },
+	// 					},
+	// 					{
+	// 						role: {
+	// 							users: {
+	// 								some: {
+	// 									userId: aliceUser.userId,
+	// 								},
+	// 							},
+	// 						},
+	// 					},
+	// 				],
+	// 			},
+	// 		},
+	// 	},
+	// });
+	// console.log('aliceFeed', aliceFeed);
 
 	const bobUser = await prisma.user.findUnique({
 		select: {
@@ -51,26 +51,50 @@ async function main() {
 
 	console.log('bob user', bobUser);
 
-	const bobFeed = await prisma.post.findMany({
-		where: {
-			category: {
-				permission: {
-					OR: [
-						{
-							categoryId: { equals: null },
+	const bobFullPerm = Boolean(
+		await prisma.permission.findFirst({
+			select: {
+				categoryId: true,
+			},
+			where: {
+				viewPosts: true,
+				categoryId: null,
+				role: {
+					users: {
+						some: {
+							userId: { equals: bobUser.userId },
 						},
-						{
-							role: {
-								users: {
-									some: {
-										userId: bobUser.userId,
-									},
-								},
-							},
-						},
-					],
+					},
 				},
 			},
+		}),
+	);
+
+	console.log('bobFullPerm', bobFullPerm);
+
+	const bobFeed = await prisma.post.findMany({
+		where: {
+			category: bobFullPerm
+				? {}
+				: {
+						permissions: {
+							some: {
+								OR: [
+									// { viewPosts: true, categoryId: null }, // DOES NOT WORK
+									{
+										viewPosts: true,
+										role: {
+											users: {
+												some: {
+													userId: bobUser!.userId,
+												},
+											},
+										},
+									},
+								],
+							},
+						},
+				  },
 		},
 	});
 	console.log('bobFeed', bobFeed);

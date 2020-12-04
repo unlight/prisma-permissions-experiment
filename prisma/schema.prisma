@@ -31,7 +31,7 @@ model Category {
   categoryId Int @id @default(autoincrement())
   name String
   posts Post[]
-  permission Permission?
+  permissions Permission[]
 }
 
 model Permission {
