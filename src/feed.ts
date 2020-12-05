@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({
   log: ['query'],
@@ -10,35 +10,31 @@ async function main() {
     console.log('prisma:query:params', event.params);
   });
 
-  // const aliceUser = await prisma.user.findUnique({
-  //  where: { name: 'Alice' },
-  // });
-  // console.log('aliceUser', aliceUser);
-  // console.log('Alice should see `Hello all`, `Post without category`');
+  const aliceUser = await prisma.user.findUnique({
+    where: { name: 'Alice' },
+  });
+  console.log('aliceUser', aliceUser);
+  console.log('Alice should see `Hello all`, `Post without category`');
 
-  // const aliceFeed = await prisma.post.findMany({
-  //  where: {
-  //    category: {
-  //      permission: {
-  //        OR: [
-  //          {
-  //            categoryId: { equals: null },
-  //          },
-  //          {
-  //            role: {
-  //              users: {
-  //                some: {
-  //                  userId: aliceUser.userId,
-  //                },
-  //              },
-  //            },
-  //          },
-  //        ],
-  //      },
-  //    },
-  //  },
-  // });
-  // console.log('aliceFeed', aliceFeed);
+  const aliceFeed = await prisma.post.findMany({
+    where: {
+      category: {
+        permissions: {
+          some: {
+            viewPosts: true,
+            role: {
+              users: {
+                some: {
+                  userId: aliceUser.userId,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  console.log('aliceFeed', aliceFeed);
 
   const bobUser = await prisma.user.findUnique({
     select: {
