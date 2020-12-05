@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 import {
   Resolver,
   Query,
@@ -9,19 +9,16 @@ import {
   Root,
   InputType,
   Field,
-} from '@nestjs/graphql'
-import { Inject } from '@nestjs/common'
-import { Post } from './post'
-import { User } from './user'
-import { PrismaService } from './prisma.service'
+} from '@nestjs/graphql';
+import { Inject } from '@nestjs/common';
+import { Post } from './post';
+import { User } from './user';
+import { PrismaService } from './prisma.service';
 
 @InputType()
 class SignupUserInput {
   @Field({ nullable: true })
-  name: string
-
-  @Field()
-  email: string
+  name: string;
 }
 
 @Resolver(User)
@@ -31,31 +28,30 @@ export class UserResolver {
   @ResolveField()
   async posts(@Root() user: User, @Context() ctx): Promise<Post[]> {
     return this.prismaService.user
-      .findOne({
+      .findUnique({
         where: {
-          id: user.id,
+          userId: user.userId,
         },
       })
-      .posts()
+      .posts();
   }
 
-  @Mutation((returns) => User)
+  @Mutation(() => User)
   async signupUser(
     @Args('data') data: SignupUserInput,
     @Context() ctx,
   ): Promise<User> {
     return this.prismaService.user.create({
       data: {
-        email: data.email,
         name: data.name,
       },
-    })
+    });
   }
 
-  @Query((returns) => User, { nullable: true })
+  @Query(() => User, { nullable: true })
   async user(@Args('id') id: number, @Context() ctx) {
-    return this.prismaService.user.findOne({
-      where: { id: id },
-    })
+    return this.prismaService.user.findUnique({
+      where: { userId: id },
+    });
   }
 }

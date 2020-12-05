@@ -13,7 +13,6 @@ import {
 } from '@nestjs/graphql';
 import { Inject } from '@nestjs/common';
 import { Post } from './post';
-import { User } from './user';
 import { PrismaService } from './prisma.service';
 
 @InputType()
@@ -26,18 +25,7 @@ class PostIDInput {
 export class PostResolver {
   constructor(@Inject(PrismaService) private prismaService: PrismaService) {}
 
-  @ResolveField()
-  author(@Root() post: Post): Promise<User | null> {
-    return this.prismaService.post
-      .findUnique({
-        where: {
-          id: post.id,
-        },
-      })
-      .author();
-  }
-
-  @Query((returns) => Post, { nullable: true })
+  @Query(() => Post, { nullable: true })
   post(@Args('where') where: PostIDInput) {
     return this.prismaService.post.findUnique({
       where: { id: where.id },
@@ -59,44 +47,11 @@ export class PostResolver {
   @Query(() => [Post])
   feed(@Context() ctx) {
     return this.prismaService.post.findMany({
-      where: {
-        published: true,
-      },
+      where: {},
     });
   }
 
-  @Mutation(() => Post)
-  createDraft(
-    @Args('title') title: string,
-    @Args('content', { nullable: true }) content: string,
-    @Args('authorEmail') authorEmail: string,
-
-    @Context() ctx,
-  ): Promise<Post> {
-    return this.prismaService.post.create({
-      data: {
-        title: title,
-        content: content,
-        author: {
-          connect: { email: authorEmail },
-        },
-      },
-    });
-  }
-
-  @Mutation((returns) => Post, { nullable: true })
-  publish(@Args('id') id: number): Promise<Post | null> {
-    return this.prismaService.post.update({
-      where: {
-        id: id,
-      },
-      data: {
-        published: true,
-      },
-    });
-  }
-
-  @Mutation((returns) => Post, { nullable: true })
+  @Mutation(() => Post, { nullable: true })
   deleteOnePost(
     @Args('where') where: PostIDInput,
     @Context() ctx,
