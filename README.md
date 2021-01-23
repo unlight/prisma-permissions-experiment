@@ -120,3 +120,14 @@ We replaced recored for roleId = 2 with categoryId = null by 2 rows for each cat
 - (-) Post cannot be published without category
 - (+/-) Additional rows in tables which grows by M\*N
   (with 20 categories and 5 roles we must insert 5\*20 = 100 records which is not big deal for database)
+
+### Non categorized permissions
+
+For example, extend solution 2
+
+| permissionId | roleId | categoryId | viewPosts | editAny | searchPosts | favoritePosts |
+| -----------: | -----: | ---------: | --------: | ------: | ----------- | ------------- |
+|            1 |      1 |          1 |         1 |       0 | NULL        | NULL          |
+|            2 |      2 |          1 |         1 |       1 | NULL        | NULL          |
+|            3 |      2 |          2 |         1 |       1 | NULL        | NULL          |
+|            4 |      1 |       NULL |      NULL |    NULL | 1           | 1             |
