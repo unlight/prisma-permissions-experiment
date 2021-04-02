@@ -20,33 +20,31 @@
     "dbpush": "rm -f prisma/dev.db && npx prisma db push --preview-feature --force && ts-node src/seed"
   },
   "dependencies": {
-    "@nestjs/common": "^7.5.5",
-    "@nestjs/core": "^7.5.5",
-    "@nestjs/graphql": "^7.9.1",
-    "@nestjs/platform-express": "^7.5.5",
-    "@prisma/client": "^2.12.1",
-    "apollo-server-express": "^2.19.0",
-    "class-validator": "^0.12.2",
-    "graphql": "^15.4.0",
-    "graphql-tools": "^7.0.2",
+    "@nestjs/common": "^7.6.15",
+    "@nestjs/core": "^7.6.15",
+    "@nestjs/graphql": "^7.10.3",
+    "@nestjs/platform-express": "^7.6.15",
+    "@prisma/client": "^2.20.1",
+    "apollo-server-express": "^2.22.2",
+    "class-validator": "^0.13.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.6.3"
+    "rxjs": "^6.6.7"
   },
   "devDependencies": {
-    "@nestjs/cli": "^7.5.3",
-    "@nestjs/schematics": "^7.2.2",
-    "@nestjs/testing": "^7.5.5",
-    "@prisma/cli": "^2.12.1",
-    "@types/express": "^4.17.9",
-    "@types/jest": "^26.0.16",
-    "@types/node": "^14.14.10",
+    "@nestjs/cli": "^7.6.0",
+    "@nestjs/schematics": "^7.3.1",
+    "@nestjs/testing": "^7.6.15",
+    "@types/express": "^4.17.11",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.37",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
-    "ts-jest": "^26.4.4",
-    "ts-loader": "^8.0.11",
-    "ts-node": "^9.1.0",
+    "prisma": "^2.20.1",
+    "ts-jest": "^26.5.4",
+    "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.3"
   },
   "jest": {
     "moduleFileExtensions": [

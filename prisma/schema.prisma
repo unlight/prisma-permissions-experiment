@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,37 +8,40 @@ datasource db {
 }
 
 model User {
-  userId Int @id @default(autoincrement())
-  name  String @unique
-  posts Post[]
-  roles Role[]
+  userId Int    @id @default(autoincrement())
+  name   String @unique
+  posts  Post[]
+  roles  Role[]
 }
 
 model Role {
-  roleId    Int     @id @default(autoincrement())
-  name      String
-  users     User[]
+  roleId     Int          @id @default(autoincrement())
+  name       String
+  users      User[]
+  Permission Permission[]
 }
 
 model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
+  id         Int       @id @default(autoincrement())
+  title      String
   categoryId Int?
-  category Category? @relation(fields: [categoryId], references: [categoryId])
+  category   Category? @relation(fields: [categoryId], references: [categoryId])
+  User       User?     @relation(fields: [userUserId], references: [userId])
+  userUserId Int?
 }
 
 model Category {
-  categoryId Int @id @default(autoincrement())
-  name String
-  posts Post[]
+  categoryId  Int          @id @default(autoincrement())
+  name        String
+  posts       Post[]
   permissions Permission[]
 }
 
 model Permission {
-  permissionId Int @id @default(autoincrement())
-  roleId Int @default(0)
-  role Role @relation(fields: [roleId], references: [roleId])
-  categoryId Int?
-  category Category? @relation(fields: [categoryId], references: [categoryId])
-  viewPosts Boolean @default(false)
+  permissionId Int       @id @default(autoincrement())
+  roleId       Int       @default(0)
+  role         Role      @relation(fields: [roleId], references: [roleId])
+  categoryId   Int?
+  category     Category? @relation(fields: [categoryId], references: [categoryId])
+  viewPosts    Boolean   @default(false)
 }
