@@ -11,6 +11,7 @@ async function main() {
   });
 
   const aliceUser = await prisma.user.findUnique({
+    include: { roles: true },
     where: { name: 'Alice' },
   });
   console.log('aliceUser', aliceUser);
