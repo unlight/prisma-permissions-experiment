@@ -131,3 +131,7 @@ For example, extend solution 2
 |            2 |      2 |          1 |         1 |       1 | NULL        | NULL          |
 |            3 |      2 |          2 |         1 |       1 | NULL        | NULL          |
 |            4 |      1 |       NULL |      NULL |    NULL | 1           | 1             |
+
+### 3rd party
+
+- https://github.com/stalniy/casl/tree/master/packages/casl-prisma
